@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniSpace | Premier University Room & Lab Management</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============================================================= -->
+<!-- HEADER / NAVBAR — Single slim row.                             -->
+<!-- Nav links stay inline. Account actions (My Bookings / CR       -->
+<!-- Login / Admin Portal) live behind a compact three-dot menu.    -->
+<!-- ============================================================= -->
+<header class="navbar" id="navbar">
+  <div class="nav-row">
+    <div class="brand">
+      <span class="brand-icon" id="navBrandIcon" aria-hidden="true">
+        <img src="assets/logo.png" alt="Premier University Logo" class="brand-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <svg class="brand-fallback-svg" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5Z" stroke="#0a0a0a" stroke-width="1.6" stroke-linejoin="round" fill="#0a0a0a"/>
+          <path d="M4 10.5V16c0 1.5 3.5 3 8 3s8-1.5 8-3v-5.5" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 8.5v6" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-title">UniSpace</span>
+        <span class="brand-sub">Premier University &middot; CSE Dept.</span>
+      </div>
+    </div>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="#roomfinder" class="nav-link">Find Room</a>
+      <a href="#floormap" class="nav-link">Floor Map</a>
+      <a href="#whyus" class="nav-link">Why UniSpace</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#developers" class="nav-link">Developers</a>
+    </nav>
+
+    <div class="nav-right">
+      <button class="hamburger" id="hamburger" aria-label="Toggle Menu">&#9776;</button>
+
+      <div class="account-menu-wrap">
+        <button class="account-menu-btn" id="accountMenuBtn" aria-label="Account Menu">&#8942;</button>
+        <div class="account-dropdown" id="accountDropdown">
+          <button class="dropdown-item" id="myBookingsBtn" style="display:none;">My Bookings</button>
+          <button class="dropdown-item" id="crAuthBtn">CR Login</button>
+          <button class="dropdown-item dropdown-item-admin" id="adminBtn">Teacher / Admin Portal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= -->
+<!-- HERO SECTION -->
+<!-- ============================= -->
+<section class="hero" id="home">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-tag">Premier University &middot; Department of CSE</span>
+    <h1 class="hero-title">Instant Room &amp; Lab Booking <span class="gold-text">for Extra Classes</span></h1>
+    <p class="hero-subtitle">Solving classroom space conflicts for Premier University CSE Department. Find, request, and confirm extra-class rooms and computer labs in seconds &mdash; no more paperwork, no more double-booking.</p>
+    <div class="hero-actions">
+      <button class="btn btn-gold" id="heroFindBtn">Find a Room Now</button>
+      <button class="btn btn-ghost" id="heroMapBtn">View Floor Map</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><span class="stat-num" id="statTotalRooms">0</span><span class="stat-label">Total Rooms</span></div>
+      <div class="stat-box"><span class="stat-num" id="statLabs">0</span><span class="stat-label">Computer Labs</span></div>
+      <div class="stat-box"><span class="stat-num" id="statFloors">4</span><span class="stat-label">Floors Covered</span></div>
+      <div class="stat-box"><span class="stat-num" id="statSlots">9</span><span class="stat-label">Daily Time Slots</span></div>
+    </div>
+
+    <div class="snapshot-widget">
+      <div class="snapshot-title">Today's Live Snapshot</div>
+      <div class="snapshot-row">
+        <div class="snapshot-chip snapshot-green"><span id="snapAvailable">0</span> Available</div>
+        <div class="snapshot-chip snapshot-blue"><span id="snapPending">0</span> Pending</div>
+        <div class="snapshot-chip snapshot-red"><span id="snapBooked">0</span> Booked</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- ALERT BANNER (dynamic notifications) -->
+<!-- ============================= -->
+<div class="alert-banner" id="alertBanner"></div>
+
+<!-- ============================= -->
+<!-- ROOM FINDER SECTION -->
+<!-- ============================= -->
+<section class="section" id="roomfinder">
+  <div class="section-head">
+    <h2>Dynamic Room Finder</h2>
+    <p>Filter available theory classrooms and computer labs in real time</p>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label for="filterSearch">Search Room No.</label>
+      <input type="text" id="filterSearch" placeholder="e.g. 601">
+    </div>
+    <div class="filter-group">
+      <label for="filterDate">Select Date</label>
+      <input type="date" id="filterDate" class="date-input">
+    </div>
+    <div class="filter-group">
+      <label for="filterSlot">Time Slot</label>
+      <select id="filterSlot">
+        <option value="">All Slots</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="filterFloor">Floor Level</label>
+      <select id="filterFloor">
+        <option value="">All Floors</option>
+        <option value="4">4th Floor</option>
+        <option value="6">6th Floor</option>
+        <option value="9">9th Floor</option>
+        <option value="10">10th Floor</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="filterType">Room Type</label>
+      <select id="filterType">
+        <option value="">All Types</option>
+        <option value="Theory">Theory Classroom</option>
+        <option value="Lab">Computer Lab</option>
+      </select>
+    </div>
+    <div class="filter-btn-group">
+      <button class="btn btn-gold" id="applyFilterBtn">Apply Filters</button>
+      <button class="btn btn-outline" id="resetFilterBtn">Reset</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="dot dot-green"></span> Available</span>
+    <span class="legend-item"><span class="dot dot-blue"></span> Pending Approval</span>
+    <span class="legend-item"><span class="dot dot-red"></span> Booked / Approved</span>
+  </div>
+
+  <div class="room-grid" id="roomGrid"></div>
+</section>
+
+<!-- ============================= -->
+<!-- HOW IT WORKS SECTION -->
+<!-- ============================= -->
+<section class="section section-alt" id="howitworks">
+  <div class="section-head">
+    <h2>How UniSpace Works</h2>
+    <p>A simple four-step workflow from request to confirmation</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <h3>Register &amp; Login</h3>
+      <p>Create your Class Representative account with your batch, semester and section details.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <h3>Find a Room</h3>
+      <p>Filter by date, time slot, floor and room type, or tap a room directly on the Floor Map.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <h3>Submit Request</h3>
+      <p>Provide the course name and teacher, then submit your booking request for review.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <h3>Get Approved</h3>
+      <p>The Teacher / Admin panel approves or rejects your request instantly &mdash; no delays.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- INTERACTIVE FLOOR MAP -->
+<!-- ============================= -->
+<section class="section" id="floormap">
+  <div class="section-head">
+    <h2>Interactive Floor Map Overview</h2>
+    <p>Live status visualization across all CSE department floors &mdash; tap any green room to book it instantly</p>
+  </div>
+  <div class="floor-map-container" id="floorMapContainer"></div>
+</section>
+
+<!-- ============================= -->
+<!-- WHY CHOOSE UNISPACE SECTION -->
+<!-- ============================= -->
+<section class="section section-alt" id="whyus">
+  <div class="section-head">
+    <h2>Why Choose UniSpace</h2>
+    <p>Built specifically for the CSE Department's daily scheduling needs</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">R</div>
+      <h3>Real-Time Availability</h3>
+      <p>Room statuses update instantly across the entire portal, so you always see accurate, live information.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">A</div>
+      <h3>Instant Approval Workflow</h3>
+      <p>Requests move directly to the Admin queue and are approved or rejected the moment a button is clicked.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">C</div>
+      <h3>Conflict-Free Scheduling</h3>
+      <p>Once a room is booked for a slot, it is automatically locked to prevent double-booking.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">S</div>
+      <h3>Secure CR Accounts</h3>
+      <p>Every Class Representative logs in with a personal, department-verified account.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">F</div>
+      <h3>Clickable Floor Map</h3>
+      <p>Tap directly on any room in the interactive floor map to book it, without scrolling back to the finder.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">M</div>
+      <h3>My Bookings Tracker</h3>
+      <p>Class Representatives can track the live status of every request they have ever submitted.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- TESTIMONIALS SECTION -->
+<!-- ============================= -->
+<section class="section" id="testimonials">
+  <div class="section-head">
+    <h2>What Students &amp; Teachers Say</h2>
+    <p>Feedback from the CSE Department community</p>
+  </div>
+  <div class="testimonial-grid">
+    <div class="testimonial-card">
+      <p class="testimonial-text">UniSpace completely removed the confusion around booking extra classes. I no longer have to run between floors to check if a room is free.</p>
+      <div class="testimonial-author">&mdash; Class Representative, Batch 55</div>
+    </div>
+    <div class="testimonial-card">
+      <p class="testimonial-text">Approving room requests now takes one click instead of managing messages across multiple groups. The dashboard is very clear.</p>
+      <div class="testimonial-author">&mdash; Faculty Member, CSE Department</div>
+    </div>
+    <div class="testimonial-card">
+      <p class="testimonial-text">The floor map view makes it easy to see which labs are free, and I can book straight from the map itself.</p>
+      <div class="testimonial-author">&mdash; Class Representative, Batch 57</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- FAQ SECTION -->
+<!-- ============================= -->
+<section class="section section-alt" id="faq">
+  <div class="section-head">
+    <h2>Frequently Asked Questions</h2>
+    <p>Everything you need to know about using UniSpace</p>
+  </div>
+  <div class="faq-list" id="faqList">
+    <div class="faq-item">
+      <button class="faq-question">Who can book a room on UniSpace?<span class="faq-toggle">+</span></button>
+      <div class="faq-answer"><p>Only registered and logged-in Class Representatives (CRs) can submit booking requests for theory classrooms and computer labs.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">Is my booking confirmed immediately after submission?<span class="faq-toggle">+</span></button>
+      <div class="faq-answer"><p>No. Your request enters a Pending state (blue badge) and requires Teacher / Admin approval before it becomes a confirmed Booking (red badge).</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">Can I book directly from the Floor Map?<span class="faq-toggle">+</span></button>
+      <div class="faq-answer"><p>Yes. Any green (available) room cell on the Floor Map can be clicked to open the booking form for that exact room.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">What happens if my request is rejected?<span class="faq-toggle">+</span></button>
+      <div class="faq-answer"><p>The room instantly returns to Available status and you are free to submit a new request for a different slot or room.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">How fast does an approval take effect?<span class="faq-toggle">+</span></button>
+      <div class="faq-answer"><p>Instantly. As soon as a Teacher / Admin clicks Approve or Reject in the dashboard, the room status updates everywhere with no extra confirmation step.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-question">How do I access the Admin dashboard?<span class="faq-toggle">+</span></button>
+      <div class="faq-answer"><p>Open the account menu (the three-dot icon) and select "Teacher / Admin Portal", then enter the department-issued 4-digit passcode.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- DEVELOPERS SECTION -->
+<!-- ============================= -->
+<section class="section" id="developers">
+  <div class="section-head">
+    <h2>Engineered By Student Developers</h2>
+    <p>Department of Computer Science &amp; Engineering, Premier University</p>
+  </div>
+  <div class="dev-grid">
+    <div class="dev-card">
+      <img src="assets/dev1.jpg" alt="Rahul Singha" class="dev-img" onerror="this.src='';this.classList.add('img-fallback')">
+      <h3>Priyota Joyonti</h3>
+      <span class="dev-role">Lead Developer</span>
+      <p class="dev-dept">CSE Department, Premier University</p>
+    </div>
+    <div class="dev-card">
+      <img src="assets/dev2.jpg" alt="Alex Morgan" class="dev-img" onerror="this.src='';this.classList.add('img-fallback')">
+      <h3>Sumaiya Chowdhury Shemu</h3>
+      <span class="dev-role">Backend &amp; Logic Developer</span>
+      <p class="dev-dept">CSE Department, Premier University</p>
+    </div>
+    <div class="dev-card">
+      <img src="assets/dev3.jpg" alt="Sam Wilson" class="dev-img" onerror="this.src='';this.classList.add('img-fallback')">
+      <h3>Arpita Roy</h3>
+      <span class="dev-role">UI/UX Designer</span>
+      <p class="dev-dept">CSE Department, Premier University</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- CONTACT / SUPPORT SECTION -->
+<!-- ============================= -->
+<section class="section section-alt" id="contact">
+  <div class="section-head">
+    <h2>Support &amp; Contact</h2>
+    <p>Reach out to the CSE Department office for further assistance</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-card">
+      <h3>Department Office</h3>
+      <p>CSE Department, Premier University, Chattogram, Bangladesh</p>
+    </div>
+    <div class="contact-card">
+      <h3>Office Hours</h3>
+      <p>Sunday &ndash; Thursday, 9:00 AM &ndash; 5:00 PM</p>
+    </div>
+    <div class="contact-card">
+      <h3>Support Email</h3>
+      <p>cse.office@premieruniversity.edu.bd</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- FOOTER -->
+<!-- ============================= -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <span class="brand-icon brand-icon-sm" aria-hidden="true">
+          <img src="assets/logo.png" alt="Premier University Logo" class="brand-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+          <svg class="brand-fallback-svg" style="display:none;" viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5Z" stroke="#0a0a0a" stroke-width="1.6" stroke-linejoin="round" fill="#0a0a0a"/>
+            <path d="M4 10.5V16c0 1.5 3.5 3 8 3s8-1.5 8-3v-5.5" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>UniSpace</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 Premier University &middot; CSE Department. All Rights Reserved.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <a href="#home">Home</a>
+      <a href="#roomfinder">Find Room</a>
+      <a href="#floormap">Floor Map</a>
+      <a href="#developers">Developers</a>
+    </div>
+    <div class="footer-col">
+      <h4>More</h4>
+      <a href="#whyus">Why UniSpace</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================= -->
+<!-- MODAL: CR REGISTRATION / LOGIN -->
+<!-- ============================= -->
+<div class="modal-overlay" id="crAuthModal">
+  <div class="modal glass">
+    <button class="modal-close" data-close="crAuthModal">&times;</button>
+    <div class="modal-tabs">
+      <button class="tab-btn active" id="tabLogin">Login</button>
+      <button class="tab-btn" id="tabRegister">Register</button>
+    </div>
+
+    <form id="loginForm" class="modal-form">
+      <h2 class="modal-title">CR Login</h2>
+      <div class="field-block">
+        <label>Email</label>
+        <input type="email" id="loginEmail" required placeholder="your.email@example.com">
+      </div>
+      <div class="field-block">
+        <label>Password</label>
+        <input type="password" id="loginPassword" required placeholder="Enter password">
+      </div>
+      <button type="submit" class="btn btn-gold full-width">Login</button>
+      <p class="form-msg" id="loginMsg"></p>
+    </form>
+
+    <form id="registerForm" class="modal-form hidden">
+      <h2 class="modal-title">CR Registration</h2>
+      <div class="field-block">
+        <label>Full Name</label>
+       <input type="text" id="regName" required placeholder="Full Name" pattern="[A-Za-z\s]+" title="Only alphabets and spaces are allowed">
+      </div>
+      <div class="field-block">
+        <label>Email</label>
+        <input type="email" id="regEmail" required placeholder="Email Address">
+      </div>
+      <div class="field-block">
+        <label>Mobile Number</label>
+        <input type="tel" id="regMobile" required placeholder="01XXXXXXXXX">
+      </div>
+      <div class="field-block">
+        <label>Password</label>
+        <input type="password" id="regPassword" required placeholder="Create Password">
+      </div>
+      <div class="field-block">
+        <label>Batch</label>
+        <input type="text" id="regBatch" required placeholder="e.g. 55">
+      </div>
+      <div class="field-block">
+        <label>Semester</label>
+        <input type="text" id="regSemester" required placeholder="e.g. 6th">
+      </div>
+      <div class="field-block">
+        <label>Section</label>
+        <input type="text" id="regSection" required placeholder="e.g. A">
+      </div>
+      <button type="submit" class="btn btn-gold full-width">Register</button>
+      <p class="form-msg" id="registerMsg"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: BOOKING FORM -->
+<!-- ============================= -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal glass">
+    <button class="modal-close" data-close="bookingModal">&times;</button>
+    <h2 class="modal-title">Book Room <span id="bookingRoomLabel"></span></h2>
+    <form id="bookingForm" class="modal-form">
+      <div class="field-block">
+        <label>Course Name</label>
+        <input type="text" id="bookCourseName" required placeholder="e.g. Data Structures">
+      </div>
+      <div class="field-block">
+        <label>Course Teacher</label>
+        <input type="text" id="bookTeacherName" required placeholder="e.g. Dr. Farhana Islam">
+      </div>
+      <div class="field-block">
+        <label>Date</label>
+        <input type="date" id="bookDate" class="date-input" required>
+      </div>
+      <div class="field-block">
+        <label>Time Slot</label>
+        <select id="bookSlot" required></select>
+      </div>
+      <button type="submit" class="btn btn-gold full-width">Submit Booking Request</button>
+      <p class="form-msg" id="bookingMsg"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: MY BOOKINGS (CR VIEW) -->
+<!-- ============================= -->
+<div class="modal-overlay" id="myBookingsModal">
+  <div class="modal glass modal-large">
+    <button class="modal-close" data-close="myBookingsModal">&times;</button>
+    <h2 class="modal-title">My Booking Requests</h2>
+    <p class="modal-sub">Track the live status of every request you have submitted</p>
+    <div class="table-wrap">
+      <table class="data-table" id="myBookingsTable">
+        <thead>
+          <tr>
+            <th>Room No.</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Course</th>
+            <th>Teacher</th>
+            <th>Status</th>
+            <th>Approved By</th>
+          </tr>
+        </thead>
+        <tbody id="myBookingsTableBody"></tbody>
+      </table>
+      <p id="noMyBookingsMsg" class="empty-msg hidden">You have not submitted any booking requests yet.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- MODAL: ADMIN PASSCODE -->
+<!-- ============================= -->
+<div class="modal-overlay" id="adminPassModal">
+  <div class="modal glass modal-small">
+    <button class="modal-close" data-close="adminPassModal">&times;</button>
+    <h2 class="modal-title">Admin Access</h2>
+    <form id="adminPassForm" class="modal-form">
+      <div class="field-block">
+        <label>Enter 4-Digit Passcode</label>
+        <input type="password" id="adminPassInput" maxlength="4" required placeholder="****">
+      </div>
+      <button type="submit" class="btn btn-gold full-width">Unlock Dashboard</button>
+      <p class="form-msg" id="adminPassMsg"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- FULL-SCREEN ADMIN DASHBOARD -->
+<!-- ============================= -->
+<div class="admin-fullscreen" id="adminDashModal">
+  <div class="admin-fs-header">
+    <div class="admin-fs-brand">
+      <span class="brand-icon" aria-hidden="true">
+        <img src="assets/logo.png" alt="Premier University Logo" class="brand-logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <svg class="brand-fallback-svg" style="display:none;" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5Z" stroke="#0a0a0a" stroke-width="1.6" stroke-linejoin="round" fill="#0a0a0a"/>
+          <path d="M4 10.5V16c0 1.5 3.5 3 8 3s8-1.5 8-3v-5.5" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <div>
+        <h2>Teacher / Admin Dashboard</h2>
+        <p>Full control center for room &amp; lab booking approvals &mdash; one click, instant effect</p>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="closeAdminDash">Close Dashboard &times;</button>
+  </div>
+
+  <div class="admin-summary">
+    <div class="admin-summary-card"><span id="adminTotalRooms">0</span><small>Total Rooms</small></div>
+    <div class="admin-summary-card"><span id="adminPendingCount">0</span><small>Pending Requests</small></div>
+    <div class="admin-summary-card"><span id="adminApprovedCount">0</span><small>Approved Bookings</small></div>
+    <div class="admin-summary-card"><span id="adminCRCount">0</span><small>Registered CRs</small></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab-btn active" data-tab="pending">Pending Requests</button>
+    <button class="admin-tab-btn" data-tab="approved">Approved Bookings</button>
+    <button class="admin-tab-btn" data-tab="rooms">All Rooms Overview</button>
+  </div>
+
+  <div class="admin-tab-panel" id="tabPanelPending">
+    <div class="admin-toolbar">
+      <input type="text" id="adminPendingSearch" placeholder="Search by CR name, room, or course...">
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="adminTable">
+        <thead>
+          <tr>
+            <th>CR Name</th>
+            <th>Batch/Sem/Sec</th>
+            <th>Room No.</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Course</th>
+            <th>Teacher</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+      </table>
+      <p id="noPendingMsg" class="empty-msg hidden">No pending requests at this time.</p>
+    </div>
+  </div>
+
+  <div class="admin-tab-panel hidden" id="tabPanelApproved">
+    <div class="table-wrap">
+      <table class="data-table" id="approvedTable">
+        <thead>
+          <tr>
+            <th>CR Name</th>
+            <th>Room No.</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Course</th>
+            <th>Teacher</th>
+            <th>Approved By</th>
+          </tr>
+        </thead>
+        <tbody id="approvedTableBody"></tbody>
+      </table>
+      <p id="noApprovedMsg" class="empty-msg hidden">No approved bookings yet.</p>
+    </div>
+  </div>
+
+  <div class="admin-tab-panel hidden" id="tabPanelRooms">
+    <div class="table-wrap">
+      <table class="data-table" id="roomsOverviewTable">
+        <thead>
+          <tr>
+            <th>Room No.</th>
+            <th>Floor</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Equipment</th>
+          </tr>
+        </thead>
+        <tbody id="roomsOverviewTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
